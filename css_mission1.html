@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navigation Bar</title>
+    
+    <style>
+    .navbar {
+        display: flex;
+        justify-content: space-between; /* 양쪽 정렬 */
+        align-items: center; /* 세로 중앙 정렬 */
+        padding: 10px 30px;
+        color: white;
+    }
+
+    /* 왼쪽 영역 (로고 + smumc) */
+    .nav-left {
+        display: flex;
+        align-items: center;
+    }
+
+    /* 로고 */
+    .logo {
+        height: 40px;
+        width: 40px;
+    }
+
+    /* smumc */
+    .smumc {
+        font-size: 16px;
+        font-weight: bold;
+        text-decoration: none;
+        margin-left: 15px;
+        color: black;
+    }
+
+    /* 오른쪽 */
+    .nav-right {
+        display: flex;
+        align-items: center;
+        gap: 20px; /* 메뉴 사이 간격 */
+    }
+
+    /* 네비게이션 링크 */
+    .nav-item {
+        font-size: 16px;
+        color: black;
+        text-decoration: none;
+    }
+    .home-link {
+        text-decoration: none;
+    }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <div class="nav-left">
+            <a href="https://www.smumc.co.kr/" class="home-link"><img src="images/logo.png" alt="Logo" class="logo"></a>
+            <a href="https://www.smumc.co.kr/" class="home-link"><span class="smumc">SMUMC</span></a>
+        </div>
+
+        <div class="nav-right">
+            <a href="https://www.smumc.co.kr/projects" class="nav-item">PROJECTS</a>
+            <a href="https://www.smumc.co.kr/members" class="nav-item">MEMBERS</a>
+            <a href="https://www.smumc.co.kr/notice" class="nav-item">NOTICE</a>
+        </div>
+    </nav>
+
+</body>
+</html>
