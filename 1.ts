@@ -1,0 +1,1 @@
+let student: object = {name: "charles", age: 25}; 

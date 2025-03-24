@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS_transition_practice</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 70px;
+        }
+
+        .box1, .box2{
+            display: flex;
+            text-align: center;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .box1{
+            box-sizing: border-box;
+            width: 150px;
+            height: 150px;
+            border-radius: 100px;
+            border: 5px solid cornflowerblue;
+            background-color: aquamarine;
+            transition-property: all;
+            transition-duration: 2s;
+        }
+        .box1:hover {
+            background-color: papayawhip;
+            border: 5px solid yellowgreen;
+        }
+        .box2 {
+            width: 150px;
+            height: 150px;
+            background-color: darksalmon;
+            transition-property: all;
+            transition-delay: 0.5s;
+            transition-timing-function: ease-in-out;
+        }
+        .box2:hover {
+            background-color: seagreen;
+        }
+    </style>
+</head>
+<body>
+    <div class="box1">BOX1</div>
+    <div class="box2">BOX2</div>
+</body>
+</html>
