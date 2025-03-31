@@ -15,6 +15,7 @@ const TodoList = ({
     todos,  
     buttonLabel, 
     onClick,
+    isDone
 }: TodoListProps) => {
     return (
         <div className="render-container__section">
@@ -28,8 +29,9 @@ const TodoList = ({
                     /* style={{
                         backgroundColor: buttonColor,
                     }} */
-                    className={`render-container__item-button
-                        ${isDone ? "render-container__item-button--delete" : "render-container__item-button--complete"}`}
+                    className={`render-container__item-button ${
+                        isDone ? "render-container__item-button--delete" : "render-container__item-button--complete"
+                    }`}
                 >
                 {buttonLabel}</button>
             </li>

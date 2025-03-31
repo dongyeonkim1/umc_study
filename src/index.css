@@ -106,7 +106,7 @@ body {
 }
 
 .render-container__item-button {
-  background-color: #dc3545;
+
   color: white;
   border: none;
   padding: 6px 10px;
@@ -116,6 +116,25 @@ body {
   transition: background-color 0.3s ease;
 }
 
-.render-container__item-button:hover {
+/* .render-container__item-button:hover {
+  background-color: #c82333;
+} */
+
+
+/* === 완료 버튼 (초록색) === */
+.render-container__item-button--complete {
+  background-color: #28a745;
+}
+
+.render-container__item-button--complete:hover {
+  background-color: #218838;
+}
+
+/* === 삭제 버튼 (빨간색) === */
+.render-container__item-button--delete {
+  background-color: #dc3545;
+}
+
+.render-container__item-button--delete:hover {
   background-color: #c82333;
 }

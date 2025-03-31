@@ -19,6 +19,7 @@ const Todo = () => {
             buttonLabel='완료'
             buttonColor='#a28745' 
             onClick={completeTodo}
+            isDone={false}
             />
         <TodoList 
             title='완료' 
@@ -26,6 +27,7 @@ const Todo = () => {
             buttonLabel='삭제' 
             buttonColor='#a28745' 
             onClick={deleteTodo}
+            isDone={true}
              />
         </div>
     </div>
