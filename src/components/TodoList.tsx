@@ -6,13 +6,13 @@ interface TodoListProps {
     todos?: TTodo[];
     buttonLabel: string;
     buttonColor: string;
-    onClick?: (todo: TTodo) => void;
+    onClick: (todo: TTodo) => void;
+    isDone: boolean;
 }
 
 const TodoList = ({
     title, 
-    todos, 
-    buttonColor, 
+    todos,  
     buttonLabel, 
     onClick,
 }: TodoListProps) => {
@@ -25,10 +25,11 @@ const TodoList = ({
                 <span className="render-container__item-text">{todo.text}</span>
                 <button
                     onClick={(): void => onClick(todo)}
-                    style={{
+                    /* style={{
                         backgroundColor: buttonColor,
-                    }}
-                    className="render-container__item-button"
+                    }} */
+                    className={`render-container__item-button
+                        ${isDone ? "render-container__item-button--delete" : "render-container__item-button--complete"}`}
                 >
                 {buttonLabel}</button>
             </li>

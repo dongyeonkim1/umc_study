@@ -1,11 +1,12 @@
 import { useState, FormEvent } from "react";
+import { useTodo } from '../context/TodoContext';
 
 
 const TodoForm = () => {
     const [input, setInput] = useState<string>('');
     const { addTodo } = useTodo();
 
- const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
+    const handleSubmit = (e: FormEvent<HTMLFormElement>): void => {
             e.preventDefault();
             const text = input.trim();
     

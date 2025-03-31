@@ -1,4 +1,4 @@
-import { createContext, PropsWithChildren, useContext, useState } from "react";
+import { createContext, PropsWithChildren, ReactElement, useContext, useState } from "react";
 import { TTodo } from "../types/todo";
 
 interface ITodoContext {
@@ -12,23 +12,23 @@ interface ITodoContext {
 export const TodoContext = createContext<ITodoContext | undefined> (undefined);
 
 export const TodoProvider = ({children}:
-PropsWithChildren): void => {
+PropsWithChildren): ReactElement => {
     const [todos, setTodos] = useState<TTodo[]>([]);
     const [doneTodos, setDoneTodos] = useState<TTodo[]>([]);
 
-    const addTodo = (text:string) : void => {
+    const addTodo = (text:string) => {
         const newTodo: TTodo = { id: Date.now(), text };
         setTodos((prevTodos): TTodo[] => [...prevTodos, newTodo]);
     };
 
-    const completeTodo = (todo: TTodo): void => {
+    const completeTodo = (todo: TTodo) => {
         setTodos(prevTodos => prevTodos.filter((t) : boolean => t.id
         !==todo.id));
 
         setDoneTodos((prevDoneTodos): TTodo[] => [...prevDoneTodos, todo]);
     };
 
-    const deleteTodo = (todo: TTodo): void => {
+    const deleteTodo = (todo: TTodo) => {
         setDoneTodos((prevDoneTodo): TTodo[] =>
         prevDoneTodo.filter((t): boolean => t.id !== todo.id));
     };
@@ -40,7 +40,7 @@ PropsWithChildren): void => {
     );
 };
 
-export const useTodo = (): void => {
+export const useTodo = () : ITodoContext => {
     const context = useContext(TodoContext);
     if (!context) {
         throw new Error(
