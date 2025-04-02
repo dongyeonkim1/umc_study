@@ -43,7 +43,7 @@
  */
 
 
- .app-container {
+/*  .app-container {
   background-color: rgba(234, 255, 217, 0.48);
 }
 
@@ -61,4 +61,31 @@ h1 {
 
 h2, p {
   font-family: '배달의민족 꾸불림 TTF', sans-serif;
+} */
+
+
+* {
+  font-family: '배달의민족 꾸불림 TTF', sans-serif;
+}
+body {
+  background-color: antiquewhite;
+}
+
+
+.error-text {
+  font-size: 80px;
+  font-weight: bold;
+  color: rgb(131, 5, 5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.movie-detail {
+  font-size: 80px;
+  font-weight: bold;
+  color: rgb(48, 13, 13);
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
