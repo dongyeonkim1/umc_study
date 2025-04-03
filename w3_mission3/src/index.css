@@ -3,3 +3,41 @@
 *{
   font-family: '배달의민족 꾸불림 TTF', sans-serif;
 }
+
+.cast-crew-section {
+  margin-top: 2rem;
+}
+
+.section-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+}
+
+.cast-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+}
+
+.person-card {
+  text-align: center;
+}
+
+.person-img {
+  width: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+  aspect-ratio: 1/1;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.person-name {
+  font-weight: 600;
+  margin-top: 0.5rem;
+}
+
+.person-role {
+  font-size: 0.875rem;
+  color: gray;
+}

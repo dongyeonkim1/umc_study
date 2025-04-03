@@ -1,35 +1,35 @@
-/* // src/components/CastList.tsx
+import React from "react";
 import { Cast } from "../types/credit";
-import defaultProfile from "../assets/no-image.png"; // 기본 이미지
 
 type CastListProps = {
   cast: Cast[];
 };
 
-const CastList = ({ cast }: CastListProps) => {
+const CastList: React.FC<CastListProps> = ({ cast }) => {
   return (
-    <section className="cast-crew-section">
-      <h2 className="section-title">감독/출연</h2>
-      <div className="cast-grid">
-        {cast.slice(0, 12).map((actor) => (
-          <div className="person-card" key={actor.id}>
-            <img
-              src={
-                actor.profile_path
-                  ? `https://image.tmdb.org/t/p/w185${actor.profile_path}`
-                  : defaultProfile
-              }
-              alt={actor.name}
-              className="person-img"
-            />
-            <div className="person-name">{actor.name}</div>
-            <div className="person-role">{actor.character}</div>
+    <div className="cast-list">
+      <h2 className="text-xl font-bold mb-4">🎭 출연진</h2>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        {cast.map((actor) => (
+          <div key={actor.id} className="bg-white rounded-2xl shadow-md p-4 text-center">
+            {actor.profile_path ? (
+              <img
+                src={`https://image.tmdb.org/t/p/w185${actor.profile_path}`}
+                alt={actor.name}
+                className="w-full h-52 object-cover rounded-lg mb-2"
+              />
+            ) : (
+              <div className="w-full h-52 bg-gray-300 rounded-lg mb-2 flex items-center justify-center text-sm text-gray-500">
+                No Image
+              </div>
+            )}
+            <div className="font-semibold">{actor.name}</div>
+            <div className="text-sm text-gray-500">{actor.character}</div>
           </div>
         ))}
       </div>
-    </section>
+    </div>
   );
 };
 
 export default CastList;
- */
