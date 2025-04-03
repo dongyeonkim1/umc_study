@@ -8,7 +8,7 @@ type CastListProps = {
 const CastList: React.FC<CastListProps> = ({ cast }) => {
   return (
     <div className="cast-list">
-      <h2 className="text-xl font-bold mb-4">🎭 출연진</h2>
+      <h2 className="cast_list">🎬출연진</h2>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {cast.map((actor) => (
           <div key={actor.id} className="bg-white rounded-2xl shadow-md p-4 text-center">

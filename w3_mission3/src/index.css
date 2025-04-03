@@ -4,6 +4,10 @@
   font-family: '배달의민족 꾸불림 TTF', sans-serif;
 }
 
+body {
+  background-color: rgb(246, 244, 230);
+}
+
 .cast-crew-section {
   margin-top: 2rem;
 }
@@ -40,4 +44,14 @@
 .person-role {
   font-size: 0.875rem;
   color: gray;
+}
+
+.cast_list, .crew_list {
+  font-size: 40px;
+  font-weight: bold;
+  background-color: aliceblue;
+  display: flex;
+  justify-content: center;
+  margin-top: 90px;
+  margin-bottom: 70px;
 }

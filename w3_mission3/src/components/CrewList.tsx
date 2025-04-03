@@ -8,7 +8,7 @@ type CrewListProps = {
 const CrewList: React.FC<CrewListProps> = ({ crew }) => {
   return (
     <div className="crew-list">
-      <h2 className="text-xl font-bold mb-4">🎬 제작진</h2>
+      <h2 className="crew_list">🎬제작진</h2>
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
         {crew.map((member) => (
           <div key={member.id} className="bg-white rounded-2xl shadow-md p-4 text-center">
