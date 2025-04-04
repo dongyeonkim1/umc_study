@@ -58,8 +58,6 @@ export default function MoviePage() {
       );
     }
 
-
-
     return (
       <>
         <div className="flex items-center justify-center gap-6 mt-5">
