@@ -1,7 +1,7 @@
 import { commonResponse } from "./common";
 
 
-//회원가입입
+//회원가입
 export type RequestSignupDto = {
     email: string;
     name: string;
@@ -44,4 +44,4 @@ export type ResponseMyInfoDto = commonResponse<{
     avatar: string | null;
     createdAt: Date;
     updatedAt: Date;
-}>
+}>;

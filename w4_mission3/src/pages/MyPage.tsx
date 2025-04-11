@@ -5,11 +5,21 @@ const MyPage = () => {
     const [data, setData] = useState([])
 
     useEffect(() => {
-        const getData = async () => {
-            const response = await getMyInfo();
-            console.log(response);
+        // const getData = async () => {
+        //     const response = await getMyInfo();
+        //     console.log(response);
+           
 
-            setData(response.data);
+        //     setData(response.data.email);
+        // };
+         const getData = async () => {
+            try {
+                const response = await getMyInfo();
+                console.log("유저 정보:", response); // 콘솔에도 확인
+                setData(response.data);
+              } catch (err) {
+                console.error("유저 정보 불러오기 실패", err);
+              }
         };
 
         getData();

@@ -23,15 +23,15 @@ const LoginPage = () => {
     
     const handleSubmit = async () => {
         console.log(values);
-        /* const response = await postSignin(values);
 
-        console.log(response); */
         try {
           const response = await postSignin(values);
           setItem(response.data.accessToken);
-        } catch {
+        } catch (error) {
           alert(errors?.message);
         }
+
+        /* console.log(response); */
     };
 
   /*   const handleSubmit = async() => {
