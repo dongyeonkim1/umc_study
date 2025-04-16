@@ -34,6 +34,10 @@ const LoginPage = () => {
         await axios.post('url', values)       //API 통신 시 
     };
  */
+
+    const handleGoogleLogin = () => {
+      window.location.href = import.meta.env.VITE_SERVER_API_URL + '/v1/auth/google/login';
+    }
     
     const isDisabled = 
         Object.values(errors || {}).some((error) => error.length > 0) ||
@@ -56,7 +60,10 @@ return (
           </button>
 
           {/* 구글 로그인 버튼 */}
-          <button className="w-full border border-white rounded-md py-2 flex items-center justify-center gap-2 hover:bg-white hover:text-black transition">
+          <button 
+            type='button'
+            onClick={handleGoogleLogin}
+            className="w-full border border-white rounded-md py-2 flex items-center justify-center gap-2 hover:bg-pink-600 hover:text-white transition">
             <img
               src="https://www.svgrepo.com/show/475656/google-color.svg"
               alt="google"
