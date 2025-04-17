@@ -159,7 +159,7 @@ const SignupPage = ()  => {
                       {...register("passwordCheck")}
                       className={`bg-black text-white border rounded-md w-full p-[10px] focus:border-[#807bff] rounded-sm ${
                         errors?.passwordCheck ? "border-red-500 bg-red-200 text-black" : "border-gray-300"}`}
-                      type={showPassword ? "text" : "password"}
+                      type={showPasswordCheck ? "text" : "password"}
                       placeholder="비밀번호 확인"
                     />
                     <button

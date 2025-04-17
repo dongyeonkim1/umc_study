@@ -5,7 +5,7 @@ const HomeLayout = () => {
     const navigate = useNavigate();
     
     return (
-        <div className="h-dvh flex flex-col text-white-600">
+        <div className="h-dvh w-full flex flex-col text-white-600">
             <nav className="w-full flex justify-between items-center px-6 py-4 bg-zinc-900">
                 <button onClick={() => navigate("/")} className="text-pink-500 text-xl font-bold bg-zinc-900">돌려돌려LP판</button> 
                 <div className="space-x-2">

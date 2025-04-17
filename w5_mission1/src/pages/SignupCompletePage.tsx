@@ -34,7 +34,7 @@ const SignupCompletePage = () => {
         {/* 버튼 */}
         <button
           className="mt-8 px-6 py-3 bg-pink-400 text-white rounded-md hover:bg-pink-600 transition"
-          onClick={() => navigate("/login")}
+          onClick={() => navigate("/")}
         >
           회원가입 완료
         </button>
