@@ -87,10 +87,6 @@ const SignupPage = ()  => {
           } catch (error) {
             console.error("회원가입 요청 실패:", error);
           }
-/* 
-        const response = await postSignup(rest);
-
-        console.log(response); */
 
     };
 

@@ -1,4 +1,4 @@
-// src/pages/SignupCompletePage.tsx
+
 import { useLocation, useNavigate } from "react-router-dom";
 
 const SignupCompletePage = () => {
