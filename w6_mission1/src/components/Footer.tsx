@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 const Footer = () => {
 
     return (
-        <footer className="bg-zinc-900 py-6 mt-12">
+        <footer className="py-6 mt-12">
             <div className="container mx-auto text-center text-pink-600">
                 <p>&copy;{new Date().getFullYear()} 돌려돌려돌림판. All rights reserved.</p>
                 <div className={"flex justify-center space-x-4 mt-4"}>

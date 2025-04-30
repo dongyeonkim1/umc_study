@@ -25,11 +25,11 @@ const MyPage = () => {
         getData();
     }, []);
 
-    const handleLogout = async() => {
+    /* const handleLogout = async() => {
         await logout();
         navigate('/');
     }
-
+ */
     return (
         <div className="mt-10">
             <div className={"flex flex-col items-center h-dvh w-full mt-15 font-bold text-2xl"}>MyPage
@@ -38,9 +38,9 @@ const MyPage = () => {
                     ? data.data.avatar 
                     : "https://cdn-icons-png.flaticon.com/512/847/847969.png"}
                     className="w-28 h-28 rounded-full bg-white object-cover" alt="프로필 이미지" /></div>
-                <div className={"text-sm font-light mt-15"}><h1 className="font-bold text-sm pb-3">이름</h1>{data.data?.name}</div>
+                <div className={"text-sm font-light mt-15"}><h1 className="font-bold text-sm pb-3 mt-10">이름</h1>{data.data?.name}</div>
                 <div className={"text-sm font-light mt-10 pb-25"}><h1 className="font-bold text-sm pb-3">이메일</h1>{data.data?.email}</div>
-                <button onClick={handleLogout} className="w-full bg-pink-500 text-white py-3 rounded-md text-lg font-medium hover:bg-pink-700 transition-colors cursor-pointer disabled:bg-gray-600">로그아웃</button>
+                {/* <button onClick={handleLogout} className="w-full bg-zinc-500 text-white py-3 rounded-md text-lg font-medium hover:bg-pink-700 transition-colors cursor-pointer disabled:bg-gray-600">로그아웃</button> */}
            </div> 
         </div>
     );
