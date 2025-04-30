@@ -3,7 +3,6 @@ import useGetLpList from "../hooks/queries/useGetLpList";
 import { useNavigate } from "react-router-dom";
 import dayjs from "dayjs";
 
-
 const HomePage = () => {
 
     const [search, setSearch] = useState(""); 
@@ -27,7 +26,9 @@ const HomePage = () => {
     return (
         <div>
         
-            <input value={search} onChange={(e)=>setSearch(e.target.value)} />
+            <div className="mt-5 justify-center items-center">
+                <input value={search} placeholder="search" onChange={(e)=>setSearch(e.target.value)} />
+            </div>
             {/* {data?.map((lp) => <h1>{lp.title}</h1>)} */}
             <div className="p-4">
 
