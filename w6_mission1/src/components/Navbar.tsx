@@ -5,8 +5,10 @@ import { useEffect, useState } from "react";
 import { ResponseMyInfoDto } from "../types/auth";
 import { getMyInfo } from "../apis/auth";
 
-
-const Navbar = () => {
+interface NavbarProps {
+    toggleSidebar: () => void;
+}
+const Navbar: React.FC<NavbarProps> = ({toggleSidebar}) => {
     
     const navigate = useNavigate();
     const {accessToken} = useAuth();
@@ -38,7 +40,12 @@ const Navbar = () => {
 
     return (
         <nav className="flex justify-between items-center px-6 py-4 bg-zinc-900">
-                <button onClick={() => navigate("/")} className="text-pink-500 text-xl font-bold bg-zinc-900">돌려돌려LP판</button> 
+                <div className="flex items-center space-x-4">
+                    <button onClick={toggleSidebar} className="text-2xl font-bold focus:outline-none text-white">
+                        =
+                    </button>
+                    <button onClick={() => navigate("/")} className="text-pink-500 text-xl font-bold bg-zinc-900">돌려돌려LP판</button> 
+                </div>
                 <div className="flex space-x-2">
                     {!accessToken && (
                         <>
