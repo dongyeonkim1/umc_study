@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import useGetLpDetail from "../hooks/queries/useGetLpDetail"; // ← LP 상세 정보 불러오는 훅
+import CommentList from "../components/CommentList";
 
 const LpDetailPage = () => {
   const { lpId } = useParams();
@@ -48,6 +49,8 @@ const LpDetailPage = () => {
         <button className="text-sm text-pink-500 hover:underline">수정</button>
         <button className="text-sm text-pink-500 hover:underline">삭제</button>
       </div>
+
+      <CommentList />
     </div>
   );
 };
