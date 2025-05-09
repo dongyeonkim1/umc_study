@@ -1,52 +1,58 @@
 import { useEffect, useState } from "react";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { CommentApiResponse } from "../types/comment";
+import { CommentData } from "../types/comment";
 import { useParams } from "react-router-dom";
 import { LOCAL_STORAGE_KEY } from "../constants/key";
 import { useInView } from "react-intersection-observer";
 
-
 const LIMIT = 10;
 
+interface FlattenedCommentResponse {
+  comments: CommentData[];
+  nextCursor: number;
+  hasNext: boolean;
+}
+
 const CommentList = () => {
-  const { id } = useParams();
+  const { lpId } = useParams();
   const [order, setOrder] = useState<"asc" | "desc">("desc");
 
   const rawToken = localStorage.getItem(LOCAL_STORAGE_KEY.accessToken);
   const token = rawToken?.replace(/^"|"$/g, "");
 
-  const {
-    data,
-    isLoading,
-    isError,
-    fetchNextPage,
-    hasNextPage,
-    isFetchingNextPage,
-  } = useInfiniteQuery({
-    queryKey: ["comments", id, order],
-    queryFn: async ({ pageParam = 0 }) => {
-      await new Promise((resolve) => setTimeout(resolve, 800)); // 800ms 지연
-      const res = await axios.get<CommentApiResponse>(
-        `http://localhost:8000/v1/lps/${id}/comments`,
-        {
-          params: {
-            cursor: pageParam,
-            limit: LIMIT,
-            order,
-          },
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      return res.data;
-    },
-    initialPageParam: 0,
-    getNextPageParam: (lastPage) =>
-      lastPage.data.hasNext ? lastPage.data.nextCursor : undefined,
-    enabled: !!id && !!token,
-  });
+  const { data, isError, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useInfiniteQuery<FlattenedCommentResponse>({
+      queryKey: ["comments", lpId, order],
+      queryFn: async ({ pageParam = 0 }) => {
+        const res = await axios.get(
+          `http://localhost:8000/v1/lps/${lpId}/comments`,
+          {
+            params: {
+              cursor: pageParam,
+              limit: LIMIT,
+              order,
+            },
+            headers: token
+              ? {
+                  Authorization: `Bearer ${token}`,
+                }
+              : {},
+          }
+        );
+
+       
+        return {
+          comments: res.data.data.data,
+          nextCursor: res.data.data.nextCursor,
+          hasNext: res.data.data.hasNext,
+        };
+      },
+      initialPageParam: 0,
+      getNextPageParam: (lastPage) =>
+        lastPage.hasNext ? lastPage.nextCursor : undefined,
+      enabled: !!lpId && !!token,
+    });
 
   const { ref, inView } = useInView({ threshold: 1 });
 
@@ -56,8 +62,9 @@ const CommentList = () => {
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  /* if (isLoading) return <CommentListSkeletonList count={3} />; */
-  if (isError) return <div className="text-white">댓글 불러오기 실패</div>;
+  if (isError) {
+    return <div className="text-red-400 text-sm">댓글 불러오기 실패</div>;
+  }
 
   return (
     <div className="mt-10 text-white">
@@ -99,7 +106,7 @@ const CommentList = () => {
       {/* 댓글 리스트 */}
       <div className="space-y-4">
         {data?.pages
-          .flatMap((page) => page.data.data)
+          .flatMap((page) => page.comments)
           .map((comment) => (
             <div key={comment.id} className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center font-bold">
@@ -117,8 +124,13 @@ const CommentList = () => {
             </div>
           ))}
 
-        {/* {isFetchingNextPage && <CommentListSkeletonList count={3} />} */}
         <div ref={ref} className="h-20" />
+
+        {isFetchingNextPage && (
+          <div className="text-sm text-gray-400 text-center">
+            댓글 불러오는 중...
+          </div>
+        )}
       </div>
     </div>
   );
