@@ -30,16 +30,34 @@ const LpDetailPage = () => {
   return (
     <div className="p-6 flex flex-col items-center text-white">
       <h1 className="text-2xl font-bold mb-4">{lpData.title}</h1>
-      <img src={lpData.thumbnail} className="w-60 h-60 object-cover rounded-full animate-spin" />
+      <div className="relative w-60 h-60 mb-4">
+        <img
+          src={lpData.thumbnail}
+          className="w-full h-full object-cover rounded-full animate-spin-slow"
+        />
+      <div className="absolute top-1/2 left-1/2 w-6 h-6 bg-black rounded-full transform -translate-x-1/2 -translate-y-1/2 z-10" />
+      </div>
       <p className="mt-4 text-center">{lpData.content}</p>
 
       {/* 태그들 */}
-      <div className="flex flex-wrap gap-2 mt-4">
+      {/* <div className="flex flex-wrap gap-2 mt-4">
         {lpData.tags.map((tag) => (
             <span key={tag.id} className="px-3 py-1 bg-zinc-700 rounded-full text-white text-sm">
                 #{tag.name}
             </span>
         ))}
+      </div> */}
+      {/* 태그들 */}
+      <div className="flex flex-wrap gap-2 mt-4 min-h-[1.5rem]">
+        {lpData.tags && lpData.tags.length > 0 ? (
+          lpData.tags.map((tag) => (
+            <span key={tag.id} className="px-3 py-1 bg-zinc-700 rounded-full text-white text-sm">
+              #{tag.name}
+            </span>
+          ))
+        ) : (
+          <span className="text-sm text-zinc-400">태그 없음</span>
+        )}
       </div>
     
 
