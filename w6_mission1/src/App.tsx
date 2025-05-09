@@ -22,11 +22,11 @@ const publicRoutes: RouteObject[] = [
     errorElement: <NotFoundPage />,
     children: [
       {index: true, element: <HomePage />}, //home경로일 때, 
-      {path: '/login', element: <LoginPage />},
-      {path: '/signup', element: <SignupPage />},
-      {path: '/signup/complete', element: <SignupCompletePage />},
-      {path: '/v1/auth/google/callback', element: <GoogleLoginRedirectPage />},
-      {path: '/lp/:lpId', element: <LpDetailPage />},
+      {path: 'login', element: <LoginPage />},
+      {path: 'signup', element: <SignupPage />},
+      {path: 'signup/complete', element: <SignupCompletePage />},
+      {path: 'v1/auth/google/callback', element: <GoogleLoginRedirectPage />},
+      {path: 'lp/:lpId', element: <LpDetailPage />},
     ],
   },
 ];
