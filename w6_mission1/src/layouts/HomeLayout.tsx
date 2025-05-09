@@ -25,10 +25,10 @@ const HomeLayout = () => {
      
       <Navbar toggleSidebar={() => setSidebarOpen((prev) => !prev)} />
 
-      <div className="flex flex-1 relative overflow-hidden">
+      <div className="flex flex-1 relative overflow-hidden h-screen">
         {/* Sidebar */}
         <aside
-          className={`w-40 bg-zinc-900 p-4 space-y-4 absolute md:relative z-20 h-full transition-transform duration-300 ease-in-out transform ${
+          className={`w-40 bg-zinc-900 p-4 space-y-4 absolute md:relative z-20 transition-transform duration-300 ease-in-out transform ${
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >

@@ -5,8 +5,9 @@ import { CommentData } from "../types/comment";
 import { useParams } from "react-router-dom";
 import { LOCAL_STORAGE_KEY } from "../constants/key";
 import { useInView } from "react-intersection-observer";
+import CommentSkeleton from "../components/CommentSkeleton";
 
-const LIMIT = 10;
+const LIMIT = 5;
 
 interface FlattenedCommentResponse {
   comments: CommentData[];
@@ -21,46 +22,51 @@ const CommentList = () => {
   const rawToken = localStorage.getItem(LOCAL_STORAGE_KEY.accessToken);
   const token = rawToken?.replace(/^"|"$/g, "");
 
-  const { data, isError, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    useInfiniteQuery<FlattenedCommentResponse>({
-      queryKey: ["comments", lpId, order],
-      queryFn: async ({ pageParam = 0 }) => {
-        const res = await axios.get(
-          `http://localhost:8000/v1/lps/${lpId}/comments`,
-          {
-            params: {
-              cursor: pageParam,
-              limit: LIMIT,
-              order,
-            },
-            headers: token
-              ? {
-                  Authorization: `Bearer ${token}`,
-                }
-              : {},
-          }
-        );
+  const {
+    data,
+    isError,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+  } = useInfiniteQuery<FlattenedCommentResponse>({
+    queryKey: ["comments", lpId, order],
+    queryFn: async ({ pageParam = 0 }) => {
+      const res = await axios.get(
+        `http://localhost:8000/v1/lps/${lpId}/comments`,
+        {
+          params: {
+            cursor: pageParam,
+            limit: LIMIT,
+            order,
+          },
+          headers: token
+            ? {
+                Authorization: `Bearer ${token}`,
+              }
+            : {},
+        }
+      );
 
-       
-        return {
-          comments: res.data.data.data,
-          nextCursor: res.data.data.nextCursor,
-          hasNext: res.data.data.hasNext,
-        };
-      },
-      initialPageParam: 0,
-      getNextPageParam: (lastPage) =>
-        lastPage.hasNext ? lastPage.nextCursor : undefined,
-      enabled: !!lpId && !!token,
-    });
+      return {
+        comments: res.data.data.data,
+        nextCursor: res.data.data.nextCursor,
+        hasNext: res.data.data.hasNext,
+      };
+    },
+    initialPageParam: 0,
+    getNextPageParam: (lastPage) =>
+      lastPage.hasNext ? lastPage.nextCursor : undefined,
+    enabled: !!lpId && !!token,
+  });
 
   const { ref, inView } = useInView({ threshold: 1 });
 
   useEffect(() => {
-    if (inView && hasNextPage && !isFetchingNextPage) {
+    if (inView && !isFetchingNextPage && hasNextPage) {
       fetchNextPage();
     }
-  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+  }, [inView, isFetchingNextPage, hasNextPage, fetchNextPage]);
 
   if (isError) {
     return <div className="text-red-400 text-sm">댓글 불러오기 실패</div>;
@@ -105,32 +111,39 @@ const CommentList = () => {
 
       {/* 댓글 리스트 */}
       <div className="space-y-4">
-        {data?.pages
-          .flatMap((page) => page.comments)
-          .map((comment) => (
-            <div key={comment.id} className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center font-bold">
-                {comment.author?.name?.[0] ?? "?"}
+        {isLoading ? (
+          Array.from({ length: 3 }).map((_, i) => <CommentSkeleton key={i} />)
+        ) : (
+          data?.pages
+            .flatMap((page) => page.comments)
+            .map((comment) => (
+              <div key={comment.id} className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full bg-pink-500 flex items-center justify-center font-bold">
+                  {comment.author?.name?.[0] ?? "?"}
+                </div>
+                <div className="flex flex-col items-start ml-2">
+                  <span className="font-semibold">
+                    {comment.author?.name ?? "알 수 없음"}
+                  </span>
+                  <p className="text-sm text-gray-300">{comment.content}</p>
+                  <span className="text-xs text-gray-500 mt-1">
+                    {new Date(comment.createdAt).toLocaleString()}
+                  </span>
+                </div>
               </div>
-              <div className="flex flex-col items-start ml-2">
-                <span className="font-semibold">
-                  {comment.author?.name ?? "알 수 없음"}
-                </span>
-                <p className="text-sm text-gray-300">{comment.content}</p>
-                <span className="text-xs text-gray-500 mt-1">
-                  {new Date(comment.createdAt).toLocaleString()}
-                </span>
-              </div>
-            </div>
-          ))}
-
-        <div ref={ref} className="h-20" />
-
-        {isFetchingNextPage && (
-          <div className="text-sm text-gray-400 text-center">
-            댓글 불러오는 중...
-          </div>
+            ))
         )}
+
+        {/* 무한 스크롤 하단 감지용 + 조건 스켈레톤 */}
+        <div ref={ref} className="h-20">
+          {hasNextPage && !isLoading && (
+            <>
+              {Array.from({ length: 2 }).map((_, i) => (
+                <CommentSkeleton key={`fetching-${i}`} />
+              ))}
+            </>
+          )}
+        </div>
       </div>
     </div>
   );
