@@ -90,7 +90,7 @@ const MyPage = () => {
       </div>
 
       {/* 등록한 LP 목록 */}
-      <div className="mt-10">
+      <div className="mt-1">
         <h2 className="text-xl font-semibold mb-4">내가 등록한 LP</h2>
         <div className="grid grid-cols-2 gap-4">
           {lpList.length === 0 ? (

@@ -1,11 +1,19 @@
 import { useEffect, useState } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import axios from "axios";
 import { CommentData } from "../types/comment";
 import { useParams } from "react-router-dom";
 import { LOCAL_STORAGE_KEY } from "../constants/key";
 import { useInView } from "react-intersection-observer";
 import CommentSkeleton from "../components/CommentSkeleton";
+import { postCommentApi } from "../apis/comment";
+import CommentItem from "./CommentItem";
+import { getMyInfo } from "../apis/auth";
 
 const LIMIT = 5;
 
@@ -18,9 +26,19 @@ interface FlattenedCommentResponse {
 const CommentList = () => {
   const { lpId } = useParams();
   const [order, setOrder] = useState<"asc" | "desc">("desc");
+  const [newComment, setNewComment] = useState("");
 
   const rawToken = localStorage.getItem(LOCAL_STORAGE_KEY.accessToken);
   const token = rawToken?.replace(/^"|"$/g, "");
+
+  const queryClient = useQueryClient();
+
+  // ✅ 현재 로그인한 유저 정보 가져오기
+  const { data: myInfo } = useQuery({
+    queryKey: ["myInfo"],
+    queryFn: getMyInfo,
+    enabled: !!token,
+  });
 
   const {
     data,
@@ -58,6 +76,17 @@ const CommentList = () => {
     getNextPageParam: (lastPage) =>
       lastPage.hasNext ? lastPage.nextCursor : undefined,
     enabled: !!lpId && !!token,
+  });
+
+  const { mutate: postComment, isPending } = useMutation({
+    mutationFn: postCommentApi,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comments", lpId, order] });
+      setNewComment("");
+    },
+    onError: () => {
+      alert("댓글 작성 중 오류가 발생했습니다.");
+    },
   });
 
   const { ref, inView } = useInView({ threshold: 1 });
@@ -101,11 +130,21 @@ const CommentList = () => {
       <div className="flex items-center gap-2 mb-10">
         <input
           type="text"
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
           placeholder="댓글을 입력해주세요"
           className="flex-1 px-3 py-2 rounded border border-gray-600 bg-[#1f1f1f] text-white focus:outline-none"
         />
-        <button className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-[#212121] cursor-pointer">
-          작성
+        <button
+          onClick={() => {
+            if (!newComment.trim()) return alert("댓글을 입력해주세요");
+            if (!lpId) return;
+            postComment({ lpId: Number(lpId), content: newComment });
+          }}
+          disabled={isPending}
+          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-[#212121] cursor-pointer disabled:opacity-50"
+        >
+          {isPending ? "작성 중..." : "작성"}
         </button>
       </div>
 
@@ -117,20 +156,11 @@ const CommentList = () => {
           data?.pages
             .flatMap((page) => page.comments)
             .map((comment) => (
-              <div key={comment.id} className="flex items-start gap-2 w-full">
-                <div className="w-8 h-8 rounded-full bg-pink-500 flex justify-center font-bold">
-                  {comment.author?.name?.[0] ?? "?"}
-                </div>
-                <div className="flex flex-col items-start ml-2">
-                  <span className="font-semibold">
-                    {comment.author?.name ?? "알 수 없음"}
-                  </span>
-                  <p className="text-sm text-gray-300">{comment.content}</p>
-                  <span className="text-xs text-gray-500 mt-1">
-                    {new Date(comment.createdAt).toLocaleString()}
-                  </span>
-                </div>
-              </div>
+              <CommentItem
+                key={comment.id}
+                comment={comment}
+                isMine={myInfo?.data.id === comment.authorId} 
+              />
             ))
         )}
 

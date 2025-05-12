@@ -11,14 +11,20 @@ export const postSignup = async (
 };
 
 
-export const postSignin = async (body: RequestSigninDto): Promise<ResponseSigninDto> => {
-    const { data } = await axiosInstance.post("/v1/auth/signin",body);
+export const postSignin = async (
+  body: RequestSigninDto
+): Promise<ResponseSigninDto> => {
+  const { data } = await axiosInstance.post("/v1/auth/signin", body);
 
-    localStorage.setItem("accessToken", data.accessToken);
+  // 토큰 저장
+  localStorage.setItem("accessToken", data.accessToken);
 
+  // axios에 토큰 설정
+  axiosInstance.defaults.headers.common.Authorization = `Bearer ${data.accessToken}`;
 
-    return data;
+  return data;
 };
+
 
 export const getMyInfo = async (): Promise<ResponseMyInfoDto> => {
 
