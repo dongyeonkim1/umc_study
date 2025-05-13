@@ -23,7 +23,7 @@ const LpCard = ({lp}: LpCardProps) => {
                 <img
                  src={lp.thumbnail}
                  alt={lp.title}
-                 className={`object-cover w-full h-48 transition-transform duration-300 ${
+                 className={`object-cover w-full h-55 transition-transform duration-300 ${
                     isHovered ? "scale-130 brightness-75" : ""
                   }`}
                 />

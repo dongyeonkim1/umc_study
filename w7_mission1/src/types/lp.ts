@@ -49,3 +49,12 @@ export type ResponseLikeLpDto = commonResponse<{
     lpId: number;
 }>;
 
+// lp.ts
+
+export type EditableLp = {
+  id: number;
+  title: string;
+  content: string;
+  thumbnail: string;
+  tags: string[]; // 또는 string[] ← 프론트 내부 상태에 따라
+};

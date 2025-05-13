@@ -1,21 +1,35 @@
 import { useRef, useEffect, useState } from "react";
 import { usePostLp } from "../hooks/mutations/usePostLp";
+import { useUpdateLp } from "../hooks/mutations/useUpdateLp";
 import { queryClient } from "../App";
+import { EditableLp } from "../types/lp";
+import { useDeleteLp } from "../hooks/mutations/useDeleteLp";
 
 interface LPModalProps {
   onClose: () => void;
+  initialData?: EditableLp;
 }
 
-const LPModal = ({ onClose }: LPModalProps) => {
+const LPModal = ({ onClose, initialData }: LPModalProps) => {
   const modalRef = useRef<HTMLDivElement>(null);
   const [lpImage, setLpImage] = useState<File | null>(null);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
-  const { mutate: postLpMutate } = usePostLp();
 
-  // 모달 외부 클릭 시 닫기
+  const { mutate: postLpMutate } = usePostLp();
+  const { mutate: updateLpMutate } = useUpdateLp();
+  const { mutate: deleteLpMutate } = useDeleteLp();
+
+  useEffect(() => {
+    if (initialData) {
+      setTitle(initialData.title);
+      setContent(initialData.content);
+      setTags(initialData.tags); // ✅ 수정됨
+    }
+  }, [initialData]);
+
   useEffect(() => {
     const handleOutsideClick = (e: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
@@ -54,28 +68,56 @@ const LPModal = ({ onClose }: LPModalProps) => {
       return;
     }
 
-    postLpMutate(
-      {
-        title,
-        content,
-        tags,
-        thumbnail: lpImage
-          ? URL.createObjectURL(lpImage)
-          : "https://example.com/thumbnail.png", // 기본 썸네일 대체 URL
-        published: true,
-      },
-      {
+    const thumbnailUrl =
+      lpImage?.name
+        ? URL.createObjectURL(lpImage)
+        : initialData?.thumbnail || "https://example.com/default-thumbnail.jpg";
+
+    const payload = {
+      title,
+      content,
+      tags,
+      thumbnail: thumbnailUrl,
+      published: true,
+    };
+
+    if (initialData) {
+      updateLpMutate(
+        { ...payload, id: initialData.id },
+        {
+          onSuccess: () => {
+            alert("LP가 수정되었습니다!");
+            queryClient.invalidateQueries({ queryKey: ["myLps"] });
+            onClose();
+          },
+          onError: () => alert("수정 실패"),
+        }
+      );
+    } else {
+      postLpMutate(payload, {
         onSuccess: () => {
-          alert("LP가 성공적으로 등록되었습니다!");
+          alert("LP가 등록되었습니다!");
           queryClient.invalidateQueries({ queryKey: ["myLps"] });
           onClose();
         },
-        onError: (error) => {
-          console.error("LP 등록 에러:", error);
-          alert("LP 등록 중 오류가 발생했습니다.");
-        },
-      }
-    );
+        onError: () => alert("등록 실패"),
+      });
+    }
+  };
+
+  const handleDelete = () => {
+    if (!initialData) return;
+    const confirm = window.confirm("정말로 이 LP를 삭제하시겠습니까?");
+    if (!confirm) return;
+
+    deleteLpMutate(initialData.id, {
+      onSuccess: () => {
+        alert("LP가 삭제되었습니다.");
+        queryClient.invalidateQueries({ queryKey: ["myLps"] });
+        onClose();
+      },
+      onError: () => alert("삭제 실패"),
+    });
   };
 
   return (
@@ -88,7 +130,6 @@ const LPModal = ({ onClose }: LPModalProps) => {
           ✕
         </button>
 
-        {/* ✅ CD 모양 도형 */}
         <div className="flex justify-center mb-4">
           {lpImage ? (
             <img
@@ -117,7 +158,6 @@ const LPModal = ({ onClose }: LPModalProps) => {
           />
         </div>
 
-        {/* 제목 */}
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
@@ -125,7 +165,6 @@ const LPModal = ({ onClose }: LPModalProps) => {
           placeholder="LP Name"
         />
 
-        {/* 내용 */}
         <input
           value={content}
           onChange={(e) => setContent(e.target.value)}
@@ -133,7 +172,6 @@ const LPModal = ({ onClose }: LPModalProps) => {
           placeholder="LP Content"
         />
 
-        {/* 태그 입력 및 추가 */}
         <div className="flex mb-2">
           <input
             value={tagInput}
@@ -150,7 +188,6 @@ const LPModal = ({ onClose }: LPModalProps) => {
           </button>
         </div>
 
-        {/* 태그 목록 */}
         <div className="flex flex-wrap gap-2 mb-4">
           {tags.map((tag) => (
             <div
@@ -168,13 +205,21 @@ const LPModal = ({ onClose }: LPModalProps) => {
           ))}
         </div>
 
-        {/* LP 등록 버튼 */}
         <button
           className="mt-2 w-full bg-pink-600 hover:bg-pink-700 text-white py-2 rounded"
           onClick={handleSubmit}
         >
-          Add LP
+          {initialData ? "Update LP" : "Add LP"}
         </button>
+
+        {initialData && (
+          <button
+            className="mt-2 w-full bg-zinc-600 hover:bg-zinc-700 text-white py-2 rounded"
+            onClick={handleDelete}
+          >
+            Delete LP
+          </button>
+        )}
       </div>
     </div>
   );

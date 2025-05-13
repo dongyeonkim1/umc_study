@@ -18,6 +18,8 @@ export type ResponseSignupDto = commonResponse<{
     avatar: string | null;
     createdAt: Date;
     updatedAt: Date;
+    accessToken: string;
+    refreshToken: string;
 }>;
 
 

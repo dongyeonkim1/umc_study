@@ -16,19 +16,17 @@ export const axiosInstance = axios.create({
 
 
 axiosInstance.interceptors.request.use(
-    (config) => {
-    const { getItem } = useLocalStorage(LOCAL_STORAGE_KEY.accessToken);
-    const accessToken = getItem();
+  (config) => {
+    const accessToken = localStorage.getItem('access_token'); // ✅ 수정
 
-    if(accessToken) {
-        config.headers = config.headers||{};
-        config.headers.Authorization = `Bearer ${accessToken}`;
+    if (accessToken) {
+      config.headers = config.headers || {};
+      config.headers.Authorization = `Bearer ${accessToken}`;
     }
 
     return config;
-},
-
-    (error) => Promise.reject(error),
+  },
+  (error) => Promise.reject(error)
 );
 
 axiosInstance.interceptors.response.use(

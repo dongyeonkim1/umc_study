@@ -1,6 +1,5 @@
 import { useEffect, useRef, useState } from "react";
 import { getMyInfo } from "../apis/auth";
-import { ResponseMyInfoDto } from "../types/auth";
 import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { getMyLpList, MyLp } from "../apis/lp";
@@ -8,6 +7,9 @@ import LPModal from "../components/LpModal";
 import { useMutation } from "@tanstack/react-query";
 import { axiosInstance } from "../apis/axios";
 import { uploadImage } from "../apis/uploads";
+import { useDeleteLp } from "../hooks/mutations/useDeleteLp";
+import { queryClient } from "../App";
+import { EditableLp } from "../types/lp"; // ✅ 추가
 
 interface UpdateProfileDto {
   name: string;
@@ -20,16 +22,20 @@ const MyPage = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const [data, setData] = useState<ResponseMyInfoDto["data"] | null>(null);
+  const [data, setData] = useState<any>(null);
   const [userId, setUserId] = useState<number | null>(null);
   const [lpList, setLpList] = useState<MyLp[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [editTargetLp, setEditTargetLp] = useState<EditableLp | null>(null); // ✅ 타입 변경
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState<UpdateProfileDto>({
     name: "",
     bio: "",
     avatar: "",
   });
+
+  const { mutate: deleteLpMutate } = useDeleteLp();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -94,9 +100,8 @@ const MyPage = () => {
     if (file) {
       try {
         const preview = URL.createObjectURL(file);
-        setForm((prev) => ({ ...prev, avatar: preview })); // 미리보기
-
-        const { imageUrl } = await uploadImage(file); // 서버 업로드
+        setForm((prev) => ({ ...prev, avatar: preview }));
+        const { imageUrl } = await uploadImage(file);
         setForm((prev) => ({ ...prev, avatar: imageUrl }));
       } catch (error) {
         console.error("이미지 업로드 실패", error);
@@ -110,7 +115,6 @@ const MyPage = () => {
       <div className="flex flex-col items-center">
         <h1 className="text-2xl font-bold mb-4">MyPage</h1>
 
-        {/* 아바타 이미지 클릭 */}
         <div
           className={`w-24 h-24 rounded-full overflow-hidden ${
             editing ? "cursor-pointer" : "cursor-not-allowed opacity-80"
@@ -135,21 +139,11 @@ const MyPage = () => {
           className="hidden"
         />
 
-        {/* 프로필 정보 */}
         {!editing ? (
           <div className="mt-6 text-sm text-center">
-            <p className="mb-2">
-              <span className="font-bold">이름: </span>
-              {data?.name}
-            </p>
-            <p className="mb-2">
-              <span className="font-bold">이메일: </span>
-              {data?.email}
-            </p>
-            <p className="mb-4">
-              <span className="font-bold">소개: </span>
-              {data?.bio ?? "소개가 없습니다."}
-            </p>
+            <p className="mb-2"><strong>이름:</strong> {data?.name}</p>
+            <p className="mb-2"><strong>이메일:</strong> {data?.email}</p>
+            <p className="mb-4"><strong>소개:</strong> {data?.bio ?? "소개가 없습니다."}</p>
             <button
               onClick={() => setEditing(true)}
               className="bg-pink-500 px-4 py-2 rounded hover:bg-pink-600"
@@ -195,6 +189,14 @@ const MyPage = () => {
         )}
       </div>
 
+      {/* LP 수정 모달 */}
+      {editTargetLp && (
+        <LPModal
+          initialData={editTargetLp}
+          onClose={() => setEditTargetLp(null)}
+        />
+      )}
+
       {/* LP 등록 모달 */}
       <div className="relative">
         <button
@@ -216,8 +218,37 @@ const MyPage = () => {
             lpList.map((lp) => (
               <div
                 key={lp.id}
-                className="w-full bg-zinc-700 rounded-lg p-4 flex flex-col items-center text-center"
+                className="relative bg-zinc-700 rounded-lg p-4 flex flex-col items-center text-center"
               >
+                <div className="absolute top-2 right-2 flex gap-2">
+                  <button
+                    onClick={() =>
+                      setEditTargetLp({
+                        id: lp.id,
+                        title: lp.title,
+                        content: lp.content,
+                        thumbnail: lp.thumbnail,
+                        tags: lp.tags.map((tag) => tag.name),
+                      })
+                    }
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (window.confirm("정말로 삭제하시겠습니까?")) {
+                        deleteLpMutate(lp.id, {
+                          onSuccess: () => {
+                            alert("삭제되었습니다.");
+                            queryClient.invalidateQueries({ queryKey: ["myLps"] });
+                          },
+                        });
+                      }
+                    }}
+                  >
+                    🗑️
+                  </button>
+                </div>
                 <img
                   src={lp.thumbnail}
                   alt={lp.title}
