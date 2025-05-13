@@ -1,6 +1,7 @@
 import { Outlet, useNavigate } from "react-router-dom";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import Sidebar from "../components/Sidebar"; // 분리된 Sidebar 불러오기
 import { useEffect, useState } from "react";
 
 const HomeLayout = () => {
@@ -22,31 +23,26 @@ const HomeLayout = () => {
 
   return (
     <div className="h-dvh w-full flex flex-col text-white bg-black relative">
-     
       <Navbar toggleSidebar={() => setSidebarOpen((prev) => !prev)} />
 
       <div className="flex flex-1 relative overflow-hidden h-screen">
         {/* Sidebar */}
-        <aside
-          className={`w-40 bg-zinc-900 p-4 space-y-4 absolute md:relative z-20 transition-transform duration-300 ease-in-out transform ${
+        <div
+          className={`absolute md:relative z-20 transition-transform duration-300 ease-in-out transform ${
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
-          <button className="block text-left">찾기</button>
-          <button className="block text-left" onClick={() => navigate("/my")}>마이페이지</button>
-          <div className="mt-20 text-center">
-            <button className="text-sm text-gray-400 mt-70">탈퇴하기</button>
-          </div>
-        </aside>
+          <Sidebar setSidebarOpen={setSidebarOpen} />
+        </div>
 
+        {/* Overlay on small screens */}
         {sidebarOpen && (
           <div
-            className="absolute inset-0 z-10"
+            className="absolute inset-0 z-10 md:hidden"
             onClick={() => setSidebarOpen(false)}
           ></div>
         )}
 
-    
         <main className="flex-1 relative z-20 mt-10 overflow-auto">
           <Outlet />
         </main>

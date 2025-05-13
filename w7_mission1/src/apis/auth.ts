@@ -1,5 +1,6 @@
 
 import { RequestSigninDto, RequestSignupDto, ResponseMyInfoDto, ResponseSigninDto, ResponseSignupDto } from "../types/auth";
+import { commonResponse } from "../types/common";
 import { axiosInstance } from "./axios";
 
 export const postSignup = async (
@@ -39,3 +40,20 @@ export const postLogout = async() => {
 
     return data;
 };
+
+export interface UpdateProfileDto {
+  name: string;
+  bio?: string;
+  avatar?: string;
+}
+
+export const patchProfile = async (body: UpdateProfileDto): Promise<commonResponse<null>> => {
+  const { data } = await axiosInstance.patch("/v1/users/me", body);
+  return data;
+};
+
+export const deleteUser = async () => {
+  const { data } = await axiosInstance.delete("/v1/users");
+  return data;
+};
+
