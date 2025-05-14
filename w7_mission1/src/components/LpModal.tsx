@@ -1,9 +1,11 @@
+// ✅ 이미지 URL 입력도 지원하도록 LPModal 수정
 import { useRef, useEffect, useState } from "react";
 import { usePostLp } from "../hooks/mutations/usePostLp";
 import { useUpdateLp } from "../hooks/mutations/useUpdateLp";
 import { queryClient } from "../App";
 import { EditableLp } from "../types/lp";
 import { useDeleteLp } from "../hooks/mutations/useDeleteLp";
+import { uploadImage } from "../apis/uploads";
 
 interface LPModalProps {
   onClose: () => void;
@@ -17,6 +19,7 @@ const LPModal = ({ onClose, initialData }: LPModalProps) => {
   const [content, setContent] = useState("");
   const [tagInput, setTagInput] = useState("");
   const [tags, setTags] = useState<string[]>([]);
+  const [thumbnailUrl, setThumbnailUrl] = useState<string>("");
 
   const { mutate: postLpMutate } = usePostLp();
   const { mutate: updateLpMutate } = useUpdateLp();
@@ -26,7 +29,8 @@ const LPModal = ({ onClose, initialData }: LPModalProps) => {
     if (initialData) {
       setTitle(initialData.title);
       setContent(initialData.content);
-      setTags(initialData.tags); // ✅ 수정됨
+      setTags(initialData.tags);
+      setThumbnailUrl(initialData.thumbnail);
     }
   }, [initialData]);
 
@@ -44,9 +48,12 @@ const LPModal = ({ onClose, initialData }: LPModalProps) => {
     document.getElementById("lp-image-input")?.click();
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setLpImage(e.target.files[0]);
+      const file = e.target.files[0];
+      setLpImage(file);
+      const { imageUrl } = await uploadImage(file);
+      setThumbnailUrl(imageUrl);
     }
   };
 
@@ -68,16 +75,11 @@ const LPModal = ({ onClose, initialData }: LPModalProps) => {
       return;
     }
 
-    const thumbnailUrl =
-      lpImage?.name
-        ? URL.createObjectURL(lpImage)
-        : initialData?.thumbnail || "https://example.com/default-thumbnail.jpg";
-
     const payload = {
       title,
       content,
       tags,
-      thumbnail: thumbnailUrl,
+      thumbnail: thumbnailUrl || "https://example.com/default-thumbnail.jpg",
       published: true,
     };
 
@@ -126,9 +128,7 @@ const LPModal = ({ onClose, initialData }: LPModalProps) => {
         ref={modalRef}
         className="bg-zinc-800 p-6 rounded-lg w-[400px] relative text-white"
       >
-        <button className="absolute top-3 right-4" onClick={onClose}>
-          ✕
-        </button>
+        <button className="absolute top-3 right-4" onClick={onClose}>✕</button>
 
         <div className="flex justify-center mb-4">
           {lpImage ? (
@@ -138,15 +138,20 @@ const LPModal = ({ onClose, initialData }: LPModalProps) => {
               className="w-32 h-32 object-cover rounded-full"
               onClick={handleImageClick}
             />
+          ) : thumbnailUrl ? (
+            <img
+              src={thumbnailUrl}
+              alt="existing"
+              className="w-32 h-32 object-cover rounded-full"
+              onClick={handleImageClick}
+            />
           ) : (
             <div
               onClick={handleImageClick}
               className="w-32 h-32 bg-gradient-to-br from-zinc-700 to-zinc-600 rounded-full flex items-center justify-center cursor-pointer relative"
             >
               <div className="w-6 h-6 bg-black rounded-full z-10" />
-              <div className="absolute text-xs text-white bottom-1">
-                Click to Upload
-              </div>
+              <div className="absolute text-xs text-white bottom-1">Click to Upload</div>
             </div>
           )}
           <input
@@ -170,6 +175,15 @@ const LPModal = ({ onClose, initialData }: LPModalProps) => {
           onChange={(e) => setContent(e.target.value)}
           className="w-full mb-2 px-3 py-2 rounded bg-zinc-700 text-white"
           placeholder="LP Content"
+        />
+
+        {/* ✅ 이미지 주소 직접 입력란 */}
+        <input
+          type="text"
+          value={thumbnailUrl}
+          onChange={(e) => setThumbnailUrl(e.target.value)}
+          className="w-full mb-2 px-3 py-2 rounded bg-zinc-700 text-white"
+          placeholder="이미지 주소 직접 입력 (선택)"
         />
 
         <div className="flex mb-2">
