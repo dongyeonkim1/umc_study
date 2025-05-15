@@ -99,7 +99,9 @@ const LPModal = ({ onClose, initialData }: LPModalProps) => {
       postLpMutate(payload, {
         onSuccess: () => {
           alert("LP가 등록되었습니다!");
-          queryClient.invalidateQueries({ queryKey: ["myLps"] });
+          queryClient.invalidateQueries({ queryKey: ["MyLps"] });
+          queryClient.invalidateQueries({ queryKey: ["infiniteLps"] });
+          
           onClose();
         },
         onError: () => alert("등록 실패"),
@@ -177,7 +179,7 @@ const LPModal = ({ onClose, initialData }: LPModalProps) => {
           placeholder="LP Content"
         />
 
-        {/* ✅ 이미지 주소 직접 입력란 */}
+        {/* 이미지 주소 직접 입력란 */}
         <input
           type="text"
           value={thumbnailUrl}
