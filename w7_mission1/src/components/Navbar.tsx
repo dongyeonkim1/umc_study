@@ -1,8 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { useLogoutMutation } from "../hooks/mutations/useLogoutMutation"; // ✅ useMutation 훅 import
-import { useEffect, useState } from "react";
-import { ResponseMyInfoDto } from "../types/auth";
+import { useLogoutMutation } from "../hooks/mutations/useLogoutMutation";
+import { useQuery } from "@tanstack/react-query";
 import { getMyInfo } from "../apis/auth";
 
 interface NavbarProps {
@@ -12,24 +11,16 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   const navigate = useNavigate();
   const { accessToken } = useAuth();
-  const [name, setName] = useState<string | null>(null);
 
-  const { mutate: logout } = useLogoutMutation(); // ✅ 변경된 logout 사용
+  // ✅ name만 구독하여 변경 시 Navbar 리렌더링 유도
+  const { data: userName } = useQuery({
+    queryKey: ["myInfo"],
+    queryFn: getMyInfo,
+    select: (res) => res.data.name,
+    enabled: !!accessToken,
+  });
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const res: ResponseMyInfoDto = await getMyInfo();
-        setName(res.data.name);
-      } catch (e) {
-        console.error("유저 정보 가져오기 실패", e);
-      }
-    };
-
-    if (accessToken) {
-      fetchUser();
-    }
-  }, [accessToken]);
+  const { mutate: logout } = useLogoutMutation();
 
   return (
     <nav className="flex justify-between items-center px-6 py-4 bg-zinc-900">
@@ -48,7 +39,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
         </button>
       </div>
       <div className="flex space-x-2">
-        {!accessToken && (
+        {!accessToken ? (
           <>
             <h2>🔍︎</h2>
             <button
@@ -64,16 +55,14 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
               회원가입
             </button>
           </>
-        )}
-
-        {accessToken && (
+        ) : (
           <div className="flex space-x-3">
             <h2>🔍︎</h2>
             <h2 className="px-3 py-1 text-sm text-white rounded">
-              {name}님 반갑습니다
+              {userName ?? "사용자"}님 반갑습니다
             </h2>
             <button
-              onClick={() => logout()} // ✅ useMutation 호출
+              onClick={() => logout()}
               className="px-3 py-1 text-sm bg-zinc-800 hover:bg-zinc-700 text-white rounded"
             >
               로그아웃

@@ -3,6 +3,7 @@ import { commonResponse, PaginationDto } from "../types/common";
 import { RequestLpDto, ResponseLikeLpDto, ResponseLpDto, ResponseLpListDto } from "../types/lp";
 import { axiosInstance } from "./axios";
 
+
 export const getLpList = async (
     paginationDto: PaginationDto,
 ): Promise<ResponseLpListDto> => {
@@ -26,7 +27,9 @@ export const postLike = async({lpId}: RequestLpDto): Promise<ResponseLikeLpDto> 
 }
 
 export const deleteLike = async({lpId}: RequestLpDto): Promise<ResponseLikeLpDto> => {
-    const {data} = await axiosInstance.delete(`/v1/lps/${lpId}/likes`);
+    
+    const { data } = await axiosInstance.delete(`/v1/lps/${lpId}/likes`, {
+  });
 
     return data;
 }

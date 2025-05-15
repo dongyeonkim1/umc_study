@@ -1,19 +1,17 @@
+// ✅ MyProfile.tsx
 import { useState } from "react";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { updateMyProfile } from "../apis/user";
 import { getMyInfo } from "../apis/auth";
-import { useQuery } from "@tanstack/react-query";
 import { ResponseMyInfoDto } from "../types/auth";
 
 const MyProfile = () => {
   const queryClient = useQueryClient();
 
-
-  // 내 정보 가져오기
-const { data: myInfo } = useQuery<ResponseMyInfoDto>({
-  queryKey: ["myInfo"],
-  queryFn: getMyInfo,
-});
+  const { data: myInfo } = useQuery<ResponseMyInfoDto>({
+    queryKey: ["myInfo"],
+    queryFn: getMyInfo,
+  });
 
   const [editing, setEditing] = useState(false);
   const [form, setForm] = useState({
@@ -24,9 +22,27 @@ const { data: myInfo } = useQuery<ResponseMyInfoDto>({
 
   const { mutate: updateProfile } = useMutation({
     mutationFn: updateMyProfile,
-    onSuccess: () => {
+    onMutate: async (newData) => {
+      await queryClient.cancelQueries({ queryKey: ["myInfo"] });
+      const previous = queryClient.getQueryData<ResponseMyInfoDto>(["myInfo"]);
+      queryClient.setQueryData(["myInfo"], (prev: any) => ({
+        ...prev,
+        data: {
+          ...prev.data,
+          name: newData.name,
+          bio: newData.bio ?? null,
+          avatar: newData.avatar ?? null,
+        },
+      }));
+      return { previous };
+    },
+    onError: (err, _newData, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(["myInfo"], context.previous);
+      }
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ["myInfo"] });
-      setEditing(false);
     },
   });
 
@@ -41,40 +57,20 @@ const { data: myInfo } = useQuery<ResponseMyInfoDto>({
       bio: form.bio || null,
       avatar: form.avatar || null,
     });
+    setEditing(false);
   };
-
 
   if (!myInfo) return <div>Loading...</div>;
 
   return (
     <div className="flex flex-col items-center gap-4 mt-10 text-white">
-      {/* 프로필 이미지 */}
-      <img
-        src={form.avatar || "/default-profile.png"}
-        alt="avatar"
-        className="w-28 h-28 rounded-full bg-gray-500 object-cover"
-      />
+      <img src={form.avatar || "/default-profile.png"} alt="avatar" className="w-28 h-28 rounded-full bg-gray-500 object-cover" />
 
-      {/* 이름, bio 입력 */}
       {editing ? (
         <>
-          <input
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
-            className="px-3 py-1 border rounded text-black"
-          />
-          <input
-            value={form.bio ?? ""}
-            onChange={(e) => setForm({ ...form, bio: e.target.value })}
-            className="px-3 py-1 border rounded text-black"
-            placeholder="소개를 입력하세요"
-          />
-          <input
-            value={form.avatar ?? ""}
-            onChange={(e) => setForm({ ...form, avatar: e.target.value })}
-            className="px-3 py-1 border rounded text-black"
-            placeholder="프로필 이미지 URL"
-          />
+          <input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="px-3 py-1 border rounded text-black" />
+          <input value={form.bio ?? ""} onChange={(e) => setForm({ ...form, bio: e.target.value })} className="px-3 py-1 border rounded text-black" />
+          <input value={form.avatar ?? ""} onChange={(e) => setForm({ ...form, avatar: e.target.value })} className="px-3 py-1 border rounded text-black" />
           <button onClick={handleSave} className="text-green-400 text-xl">✔</button>
         </>
       ) : (
@@ -84,25 +80,23 @@ const { data: myInfo } = useQuery<ResponseMyInfoDto>({
         </>
       )}
 
-      {/* 이메일 고정 */}
       <p>{myInfo.data.email}</p>
 
-      {/* 설정 버튼 */}
       {!editing && (
-         <button
-            onClick={() => {
+        <button
+          onClick={() => {
             setForm({
-                name: myInfo.data.name,
-                bio: myInfo.data.bio ?? "",
-                avatar: myInfo.data.avatar ?? "",
+              name: myInfo.data.name,
+              bio: myInfo.data.bio ?? "",
+              avatar: myInfo.data.avatar ?? "",
             });
             setEditing(true);
-       }}
-    className="text-sm text-gray-300 underline"
-  >
-    설정
-  </button>
-)}
+          }}
+          className="text-sm text-gray-300 underline"
+        >
+          설정
+        </button>
+      )}
     </div>
   );
 };
