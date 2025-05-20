@@ -5,14 +5,26 @@ import { axiosInstance } from "./axios";
 
 
 export const getLpList = async (
-    paginationDto: PaginationDto,
+  paginationDto: PaginationDto & { type?: "title" | "tag" },
 ): Promise<ResponseLpListDto> => {
-    const{data} = await axiosInstance.get('/v1/lps', {
-        params: paginationDto,
-    });
+  const { type, search, ...rest } = paginationDto;
 
+  // 태그 검색
+  if (type === "tag" && search) {
+    const { data } = await axiosInstance.get(`/v1/lps/tag/${search}`, {
+      params: rest,
+    });
     return data;
+  }
+
+  // 제목 검색
+  const { data } = await axiosInstance.get("/v1/lps", {
+    params: { ...rest, search, type },
+  });
+
+  return data;
 };
+
 
 export const getLpDetail = async({lpId}: RequestLpDto):Promise<ResponseLpDto> => {
     const {data} = await axiosInstance.get(`/v1/lps/${lpId}`);
