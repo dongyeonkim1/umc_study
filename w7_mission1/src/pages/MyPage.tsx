@@ -211,6 +211,8 @@ const MyPage = () => {
           onClose={() => {
             setEditTargetLp(null);
             setIsModalOpen(false);
+            queryClient.invalidateQueries({ queryKey: ["myLps"] }); 
+            queryClient.invalidateQueries({ queryKey: ["infiniteLps"] });
           }}
         />
       )}

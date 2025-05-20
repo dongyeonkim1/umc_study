@@ -21,7 +21,7 @@ const LpCard = ({lp}: LpCardProps) => {
                 onClick={() => navigate(`/lp/${lp.id}`)}
             >
                 <img
-                 src={lp.thumbnail}
+                 src={lp.thumbnail || "/default-thumbnail.jpg"}
                  alt={lp.title}
                  className={`object-cover w-full h-55 transition-transform duration-300 ${
                     isHovered ? "scale-130 brightness-75" : ""

@@ -30,4 +30,5 @@ export type PaginationDto = {
     limit? : number;
     search?: string;
     order?: PAGINATION_ORDER;
+    type?: "title" | "tag";
 };

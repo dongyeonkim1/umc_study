@@ -1,4 +1,5 @@
 
+import { LOCAL_STORAGE_KEY } from "../constants/key";
 import { RequestSigninDto, RequestSignupDto, ResponseMyInfoDto, ResponseSigninDto, ResponseSignupDto } from "../types/auth";
 import { commonResponse } from "../types/common";
 import { axiosInstance } from "./axios";
@@ -18,7 +19,7 @@ export const postSignin = async (
   const { data } = await axiosInstance.post("/v1/auth/signin", body);
 
   // 토큰 저장
-  localStorage.setItem("accessToken", data.accessToken);
+  localStorage.setItem(LOCAL_STORAGE_KEY.accessToken, data.accessToken);
 
   // axios에 토큰 설정
   axiosInstance.defaults.headers.common.Authorization = `Bearer ${data.accessToken}`;

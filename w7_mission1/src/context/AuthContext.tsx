@@ -1,7 +1,14 @@
-import { createContext, PropsWithChildren, useContext, useState } from "react";
+import {
+  createContext,
+  PropsWithChildren,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useLocalStorage } from "../hooks/useLocalStrorage";
 import { LOCAL_STORAGE_KEY } from "../constants/key";
 import { postLogout } from "../apis/auth";
+import { axiosInstance } from "../apis/axios"; 
 
 interface AuthContextType {
   accessToken: string | null;
@@ -49,19 +56,27 @@ export const AuthProvider = ({ children }: PropsWithChildren) => {
     setRefreshTokenState(token);
   };
 
-    const logout = async () => {
+  const logout = async () => {
     try {
-        await postLogout(); // 서버에 로그아웃 요청
+      await postLogout(); // 서버에 로그아웃 요청
     } catch (error) {
-        // 탈퇴 직후라면 실패할 수 있음 → 무시 가능
-        console.warn("로그아웃 실패 (무시 가능)", error);
+      console.warn("로그아웃 실패 (무시 가능)", error);
     } finally {
-        removeAccessTokenFromStorage();
-        removeRefreshTokenFromStorage();
-        setAccessToken(null);
-        setRefreshToken(null);
+      removeAccessTokenFromStorage();
+      removeRefreshTokenFromStorage();
+      setAccessToken(null);
+      setRefreshToken(null);
     }
-    };
+  };
+
+  // ✅ accessToken이 변경될 때마다 axios에 자동 반영
+  useEffect(() => {
+    if (accessToken) {
+      axiosInstance.defaults.headers.common.Authorization = `Bearer ${accessToken}`;
+    } else {
+      delete axiosInstance.defaults.headers.common.Authorization;
+    }
+  }, [accessToken]);
 
   return (
     <AuthContext.Provider

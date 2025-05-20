@@ -90,6 +90,7 @@ const LPModal = ({ onClose, initialData }: LPModalProps) => {
           onSuccess: () => {
             alert("LP가 수정되었습니다!");
             queryClient.invalidateQueries({ queryKey: ["myLps"] });
+            queryClient.invalidateQueries({ queryKey: ["infiniteLps"] });
             onClose();
           },
           onError: () => alert("수정 실패"),
@@ -99,9 +100,8 @@ const LPModal = ({ onClose, initialData }: LPModalProps) => {
       postLpMutate(payload, {
         onSuccess: () => {
           alert("LP가 등록되었습니다!");
-          queryClient.invalidateQueries({ queryKey: ["MyLps"] });
+          queryClient.invalidateQueries({ queryKey: ["myLps"] }); // ✅ 수정
           queryClient.invalidateQueries({ queryKey: ["infiniteLps"] });
-          
           onClose();
         },
         onError: () => alert("등록 실패"),
@@ -118,6 +118,7 @@ const LPModal = ({ onClose, initialData }: LPModalProps) => {
       onSuccess: () => {
         alert("LP가 삭제되었습니다.");
         queryClient.invalidateQueries({ queryKey: ["myLps"] });
+        queryClient.invalidateQueries({ queryKey: ["infiniteLps"] });
         onClose();
       },
       onError: () => alert("삭제 실패"),

@@ -64,6 +64,10 @@ export const postLp = async (body: PostLpBody): Promise<void> => {
 
 
 export const getMyLpList = async (id:number): Promise<MyLp[]> => {
-  const { data } = await axiosInstance.get(`/v1/lps/user/${id}`);
+  const { data } = await axiosInstance.get(`/v1/lps/user/${id}`, {
+    params: {
+      limit: 1000,
+    },
+  });
   return data.data.data;
 };

@@ -11,22 +11,23 @@ let refreshPromise: Promise<string> | null = null;
 
 export const axiosInstance = axios.create({
     baseURL: import.meta.env.VITE_SERVER_API_URL,
-    withCredentials: true,
 });
 
 
 axiosInstance.interceptors.request.use(
-  (config) => {
-    const accessToken = localStorage.getItem('access_token'); // ✅ 수정
+    (config) => {
+    const { getItem } = useLocalStorage(LOCAL_STORAGE_KEY.accessToken);
+    const accessToken = getItem();
 
-    if (accessToken) {
-      config.headers = config.headers || {};
-      config.headers.Authorization = `Bearer ${accessToken}`;
+    if(accessToken) {
+        config.headers = config.headers||{};
+        config.headers.Authorization = `Bearer ${accessToken}`;
     }
 
     return config;
-  },
-  (error) => Promise.reject(error)
+},
+
+    (error) => Promise.reject(error),
 );
 
 axiosInstance.interceptors.response.use(
