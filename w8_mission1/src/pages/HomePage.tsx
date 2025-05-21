@@ -6,8 +6,9 @@ import LpCard from "../components/LpCard/LpCard";
 import LpCardSkeletonList from "../components/LpCard/LpCardSkeletonList";
 import LPModal from "../components/LpModal"; 
 import { useQueryClient } from "@tanstack/react-query";
-import useDebounce from "../hooks/queries/useDebounce";
+import useDebounce from "../hooks/useDebounce";
 import { SEARCH_DEBOUNCE_DELAY } from "../constants/delay";
+import useThrottleFn from "../hooks/useThrottleFn";
 
 const HomePage = () => {
   const [search, setSearch] = useState("");
@@ -15,7 +16,7 @@ const HomePage = () => {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
   const [order, setOrder] = useState<PAGINATION_ORDER>(PAGINATION_ORDER.desc);
   const [searchType, setSearchType] = useState<"title" | "tag">("title");
-
+  const [isThrottledFetching, setIsThrottledFetching] = useState(false);
 
   const [isModalOpen, setIsModalOpen] = useState(false); // 모달 상태
   const queryClient = useQueryClient();
@@ -30,18 +31,26 @@ const HomePage = () => {
     queryClient.invalidateQueries({ queryKey: ['infiniteLps'] }); //  LP 목록 갱신
   };
 
+  const throttledFetchNextPage = useThrottleFn(() => {
+  setIsThrottledFetching(true);               
+  fetchNextPage().finally(() => {
+    setTimeout(() => {
+      setIsThrottledFetching(false);         
+    }, 3000);
+  });
+}, 3000);
 
   useEffect(() => {
     if (inView && !isFetching && hasNextPage) {
-      fetchNextPage();
+      throttledFetchNextPage();
     }
-  }, [inView, isFetching, hasNextPage, fetchNextPage]);
+  }, [inView, isFetching, hasNextPage, throttledFetchNextPage]);
 
   if (isPending || !lps) return <div>Loading...</div>;
   if (isError) return <div>Error.</div>;
 
-  const lpList = lps.pages?.flatMap((page) => page.data.data);
-  console.log("🔥 LP 목록:", lpList); // ← 여기서 확인!
+  /* const lpList = lps.pages?.flatMap((page) => page.data.data); */
+
 
   return (
     <div className="text-white p-6">

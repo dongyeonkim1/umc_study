@@ -22,13 +22,13 @@ const HomeLayout = () => {
   }, []);
 
   return (
-    <div className="h-dvh w-full flex flex-col text-white bg-black relative">
+    <div className="min-h-screen w-full flex flex-col text-white bg-black relative">
       <Navbar toggleSidebar={() => setSidebarOpen((prev) => !prev)} />
 
-      <div className="flex flex-1 relative overflow-hidden h-screen">
+      <div className="flex flex-1">
         {/* Sidebar */}
         <div
-          className={`absolute md:relative z-20 transition-transform duration-300 ease-in-out transform ${
+          className={`md:relative z-20 transition-transform duration-300 ease-in-out transform ${
             sidebarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
@@ -38,7 +38,7 @@ const HomeLayout = () => {
         {/* Overlay on small screens */}
         {sidebarOpen && (
           <div
-            className="absolute inset-0 z-10 md:hidden"
+            className="inset-0 z-10 md:hidden"
             onClick={() => setSidebarOpen(false)}
           ></div>
         )}
