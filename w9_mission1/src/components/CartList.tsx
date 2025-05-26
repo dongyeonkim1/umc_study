@@ -1,13 +1,12 @@
-import { useSelector } from "react-redux";
-import cartItems from "../constants/cartItems";
+import { useSelector } from "../hooks/useCustomRedux";
 import CartItem from "./CartItem";
 
 const CartList = () => {
-    const item = useSelector((state) => state.cart);
-    console.log(item);
+    const { cartItems } = useSelector((state) => state.cart);
+
 
     return (
-        <div className="flex flex-col items-center justify-center">
+        <div className="flex flex-col items-center justify-center bg-gray-100">
            <ul>{cartItems.map((item) => (
             <CartItem key={item.id} lp={item}/>
            ))}</ul>
