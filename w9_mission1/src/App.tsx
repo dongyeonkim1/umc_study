@@ -1,23 +1,11 @@
-import { Provider } from "react-redux";
-import "./App.css";
 import CartList from "./components/CartList";
+import ConfirmModal from "./components/ConfirmModal";
 import Navbar from "./components/Navbar";
 import PriceBox from "./components/PriceBox";
-import ConfirmModal from "./components/ConfirmModal";
-import store from "./store/store";
-
-import { useDispatch, useSelector } from "./hooks/useCustomRedux";
-import { clearCart } from "./slices/cartSlice";
-import { closeModal } from "./slices/modalSlice";
+import { useModalStore } from "./hooks/useModalStore";
 
 function AppContent() {
-  const isModalOpen = useSelector((state) => state.modal.isConfirmModalOpen);
-  const dispatch = useDispatch();
-
-  const handleConfirm = () => {
-    dispatch(clearCart());
-    dispatch(closeModal());
-  };
+  const isModalOpen = useModalStore((state) => state.isOpen);
 
   return (
     <>
@@ -26,17 +14,9 @@ function AppContent() {
         <CartList />
         <PriceBox />
       </div>
-      <ConfirmModal onConfirm={handleConfirm} />
+      <ConfirmModal />
     </>
   );
 }
 
-function App() {
-  return (
-    <Provider store={store}>
-      <AppContent />
-    </Provider>
-  );
-}
-
-export default App;
+export default AppContent;
